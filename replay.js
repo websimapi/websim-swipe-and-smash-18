@@ -119,7 +119,7 @@ export default class Replay {
         this.state.actions = [...recording.actions];
         this.state.currentReplayBoard = replayBoard; // Store for resume
         playPauseButton.innerHTML = '&#10074;&#10074;'; // Pause icon
-        playPauseButton.classList.remove('playing');
+        playPauseButton.classList.remove('visible');
         
         this.showControls(); // Show controls for 1 second at the start
 
@@ -239,41 +239,32 @@ export default class Replay {
         if (!comboDisplay) {
             comboDisplay = document.createElement('div');
             comboDisplay.id = 'replay-combo-display';
-            // Apply similar styles as the main game combo display
-            Object.assign(comboDisplay.style, {
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%) scale(0.8)',
-                color: 'white',
-                fontSize: '4em',
-                fontWeight: 'bold',
-                zIndex: '100',
-                textShadow: '3px 3px 0 #d63384, -1px -1px 0 #d63384, 1px -1px 0 #d63384, -1px 1px 0 #d63384, 1px 1px 0 #d63384',
-                opacity: '0',
-                pointerEvents: 'none',
-                transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
-            });
+            // Mimic styles from CSS for consistency
+            comboDisplay.className = 'combo-display-base';
             document.getElementById('replay-container').appendChild(comboDisplay);
         }
 
         clearTimeout(this.comboTimeout);
 
         if (count < 2) {
-            comboDisplay.style.opacity = '0';
-            comboDisplay.style.transform = 'translate(-50%, -50%) scale(0.8)';
+            comboDisplay.classList.remove('visible', 'rainbow');
             return;
         }
+        
+        const isRainbow = document.getElementById('replay-container').classList.contains('rainbow-mode');
 
         comboDisplay.textContent = `Combo x${count}`;
-        comboDisplay.style.opacity = '1';
-        comboDisplay.style.transform = 'translate(-50%, -50%) scale(1.2)';
+        comboDisplay.classList.add('visible');
 
-        const isRainbow = document.getElementById('replay-container').classList.contains('rainbow-mode');
+        if (isRainbow) {
+            comboDisplay.classList.add('rainbow');
+        } else {
+            comboDisplay.classList.remove('rainbow');
+        }
+
         if (!isRainbow) {
             this.comboTimeout = setTimeout(() => {
-                comboDisplay.style.opacity = '0';
-                comboDisplay.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                comboDisplay.classList.remove('visible');
             }, 1500);
         }
     }
